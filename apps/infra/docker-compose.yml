@@ -1,0 +1,27 @@
+services:
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: mqtt
+    ports:
+      - "1883:1883"
+    # gera um mosquitto.conf mínimo e inicia o broker
+    command: >
+      /bin/sh -lc 'printf "listener 1883\nallow_anonymous true\npersistence true\n" >
+      /mosquitto/config/mosquitto.conf && mosquitto -c /mosquitto/config/mosquitto.conf'
+
+  car:
+    build:
+      context: .
+      dockerfile: apps/car_publisher/Dockerfile
+    environment:
+      MQTT_HOST: mqtt
+      MQTT_PORT: 1883
+      NUM_ISCCP: 15
+      TRACK_KM: 4.309
+      AVG_SPEED_KMH: 216
+      STEP_MS: 200
+      QOS: 1
+      LAPS: 0          # 0 = roda indefinidamente
+      RANDOM_SEED: 0
+    depends_on:
+      - mqtt
