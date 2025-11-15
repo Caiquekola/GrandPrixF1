@@ -4,8 +4,8 @@ WORKDIR /app
 
 RUN pip install --no-cache-dir flask flask-cors pymongo
 
-COPY svcp_server.py .
+COPY servidor_svcp.py .
 
 ENV PYTHONUNBUFFERED=1
 
-CMD ["python", "-u", "svcp_server.py"]
+CMD ["python", "-u", "servidor_svcp.py"]
