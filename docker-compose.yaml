@@ -1,6 +1,15 @@
 version: "3"
 services:
-
+  gp_interface:
+    build: ./interface
+    container_name: 
+    ports:
+      - "5173:5173"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./gp_frontend:/app
+      - /app/node_modules
 
   mqtt:
     image: toke/mosquitto
@@ -154,14 +163,3 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
-
-  # interface:
-  #   build: ./interface
-  #   container_name: dashboard
-  #   ports:
-  #     - "5173:5173"
-  #   environment:
-  #     - CHOKIDAR_USEPOLLING=true
-  #   volumes:
-  #     - ./interface:/app
-  #     - /app/node_modules

@@ -1,0 +1,44 @@
+.navContainer {
+    width: 100%;
+    height: 388px;
+    display: flex;
+    justify-content: end;
+    background-color: #000;
+    border-bottom: 1px solid #303037;
+    flex-direction: column;
+    align-items: center;
+
+
+    .navImg {
+        position: relative;
+        display: flex;
+        align-items: end;
+        justify-content: center;
+        width: 50%;
+        height: 290px;
+
+        img{
+            height: 100%;
+            width: 100%
+        }
+
+        span {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background:linear-gradient(360deg, #15151E, #15151e28);
+            left: 0;
+            border-radius: 10px;
+            z-index: 1;
+        }
+        h1{
+            position: absolute;
+            z-index: 2;
+            font-size: 46px;
+            margin-bottom: 2rem;
+        }
+        
+    }
+
+   
+}
