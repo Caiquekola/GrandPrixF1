@@ -1,9 +1,8 @@
 .navContainer {
     width: 100%;
-    height: 388px;
     display: flex;
     justify-content: end;
-    background-color: #000;
+    background-color: #ffffff;
     border-bottom: 1px solid #303037;
     flex-direction: column;
     align-items: center;

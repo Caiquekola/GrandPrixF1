@@ -1,79 +1,106 @@
 .dashboard_container {
-    width: 100%;
-    padding: 3rem 0;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    gap: 3rem;
+  width: 100%;
+  padding: 3rem 0;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
 }
 
 .dashboard_title {
-    width: 80%;
-    display: flex;
-    align-items: center;
+  width: 80%;
+  display: flex;
+  align-items: center;
 }
 
+/* Barra do select (antes preta) */
 .dashboard_team {
-    width: 100%;
-    height: 70px;
-    display: flex;
-    justify-content: center;
-    background-color: #000;
-    border-bottom: 1px solid #303037;
-    border-top: 1px solid #303037;
-    align-items: end
+  width: 100%;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+
+  background-color: var(--surface, #ffffff);
+  border-bottom: 1px solid var(--border, rgba(21, 21, 30, 0.10));
+  border-top: 1px solid var(--border, rgba(21, 21, 30, 0.10));
 }
 
+/* Selects (antes pretos) */
 .dashboard_select_team {
-    padding: 12px 0px;
-    cursor: pointer;
-    width: 200px;
-    background-color: #000;
-    border-bottom: 1px solid transparent;
+  padding: 12px 0px;
+  cursor: pointer;
+  width: 200px;
+
+  background-color: transparent;
+  border-bottom: 1px solid transparent;
+
+  color: var(--text, #15151e);
 }
 
 .dashboard_select {
-    padding: 12px 0px;
-    border-bottom: 1px solid #303037;
-    cursor: pointer;
-    width: 200px;
-    background-color: #000;
-    margin-bottom: 2rem;
+  padding: 12px 0px;
+  cursor: pointer;
+  width: 200px;
+  margin-bottom: 2rem;
+
+  background-color: transparent;
+  border-bottom: 1px solid var(--border, rgba(21, 21, 30, 0.10));
+
+  color: var(--text, #15151e);
 }
 
+/* Melhorando estados de foco no tema claro */
 .dashboard_select:focus,
 .dashboard_select_team:focus {
-    outline: 0;
-    border-bottom-color: red;
+  outline: 0;
+  border-bottom-color: var(--accent, #ef0000);
 }
-.dashboard_table_pilot{
-    display: flex;
-    justify-content: space-between;
+
+/* Opcional: hover pra dar feedback */
+.dashboard_select:hover,
+.dashboard_select_team:hover {
+  border-bottom-color: rgba(239, 0, 0, 0.35);
 }
+
+/* Layout */
+.dashboard_table_pilot {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Card da tabela (antes preto) */
 .dashboard_table_container {
-    background-color: #000;
-    padding: 2.5rem 4rem 3.5rem 4rem;
-    border-radius: 10px
+  background-color: var(--surface, #ffffff);
+  padding: 2.5rem 4rem 3.5rem 4rem;
+  border-radius: 10px;
+
+  /* opcional: cara de card no tema claro */
+  border: 1px solid var(--border, rgba(21, 21, 30, 0.10));
+  box-shadow: 0 8px 24px rgba(21, 21, 30, 0.06);
 }
 
 .dashboard_table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 
-    th {
-        border-bottom: 2px solid #606066;
-        padding: 16px 48px 16px 4px;
-        color: #AAAAAA;
-        text-transform: uppercase;
-        text-align: left
-    }
+  th {
+    border-bottom: 2px solid rgba(21, 21, 30, 0.14);
+    padding: 16px 48px 16px 4px;
 
-    td {
-        border-bottom: 1px solid #303037;
-        padding: 16px 48px 16px 4px;
-        font-weight: 600;
-        color: #FFF;
-        padding: 10px
-    }
+    color: var(--text-muted, #5f6472);
+    text-transform: uppercase;
+    text-align: left;
+  }
+
+  td {
+    border-bottom: 1px solid var(--border, rgba(21, 21, 30, 0.10));
+
+    /* você tinha padding duplicado (16... e depois 10px). Mantive 10px. */
+    padding: 10px;
+
+    font-weight: 600;
+    color: var(--text, #15151e);
+  }
 }

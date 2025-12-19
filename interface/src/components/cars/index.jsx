@@ -5,7 +5,7 @@ function Cars() {
 
     const handleGet = async () => {
         try {
-            const response = await fetch("http://127.0.0.1:5000/pilots");
+            const response = await fetch("http://127.0.0.1:5000/carros");
             const data = await response.json();
             setCars(data)
 
@@ -21,13 +21,13 @@ function Cars() {
     return (
         <div style={{ width: "100%", padding: "3rem 0", display: "flex", justifyContent: "center", }}>
             <div style={{ width: "80%", display: "flex", flexDirection: "column", gap: "3rem" }}>
-                <h1>Pilotos classificados</h1>
+                <h1>Carros classificados</h1>
 
                 <div style={{ backgroundColor: "#000", padding: "3.5rem 4rem", borderRadius: 10 }}>
                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
                         <thead>
                             <tr>
-                                <th style={{ ...th, width: "40%" }}>Pilotos</th>
+                                <th style={{ ...th, width: "40%" }}>Carro</th>
                                 <th style={{ ...th, width: "20%" }}>Nacionalidade</th>
                                 <th style={{ ...th, width: "25%" }}>Equipe</th>
                                 <th style={{ ...th, textAlign: "right", padding: "16px 4px 16px 48px" }}>N. Carro</th>

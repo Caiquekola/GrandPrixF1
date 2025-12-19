@@ -23,9 +23,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='' element={<Body />}>
-            <Route index element={<Navigate to="cars" />} />
-            <Route path='cars' element={<Cars />} />
-            <Route path='dashboard' element={<Dashboard />} />
+            <Route index element={<Navigate to="carros" />} />
+            <Route path='carros' element={<Cars />} />
+            <Route path='interface' element={<Dashboard />} />
           </Route>
         </Routes>
       </BrowserRouter >

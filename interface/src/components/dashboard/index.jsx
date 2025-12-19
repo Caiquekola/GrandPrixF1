@@ -6,23 +6,23 @@ function Dashboard() {
     const [selectTeams, setSelectTeams] = useState("Red Bull");
     const [selectIsccp, setSelectIsccps] = useState("01");
     const teams = [
-        "Red Bull",
-        "Ferrari",
-        "McLaren",
-        "Mercedes",
-        "Aston Martin",
-        "Alpine",
-        "Williams",
-        "Haas",
-        "Racing Bulls",
-        "Sauber",
-        "Lotus",
-        "Renault"
+        "Flamengo",
+        "Palmeiras",
+        "São Paulo",
+        "Corinthians",
+        "Atlético Mineiro",
+        "Grêmio",
+        "Internacional",
+        "Santos",
+        "Fluminense",
+        "Botafogo",
+        "Vasco",
+        "Cruzeiro",
     ];
 
     const handleGet = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/dashboard?team=${selectTeams}&sector=${selectIsccp}`);
+            const response = await fetch(`http://127.0.0.1:5000/interface?team=${selectTeams}&sector=${selectIsccp}`);
             const data = await response.json();
             console.log(data)
             setCars(data)

@@ -13,7 +13,7 @@ print(db.list_collection_names())
 collection_cars = db["cars"]
 collection_tire = db["tire_states"]
 
-@app.route("/dashboard", methods=["GET"])
+@app.route("/interface", methods=["GET"])
 def dashboard():
     team_filter = request.args.get("team") 
     sector_filter = request.args.get("sector")
@@ -45,7 +45,7 @@ def dashboard():
 
 
 
-@app.route("/pilots", methods=["GET"])
+@app.route("/carros", methods=["GET"])
 def pilots():
     cars = list(collection_cars.find({})) 
 

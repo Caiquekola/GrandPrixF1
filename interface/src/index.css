@@ -1,12 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Orbitron:wght@400..900&display=swap');
+
+:root{
+  /* Base */
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --surface-2: #f1f3f8;
+
+  /* Texto */
+  --text: #15151e;
+  --text-muted: #5f6472;
+
+  /* Bordas / sombras */
+  --border: rgba(21, 21, 30, 0.10);
+
+  /* Destaque (mantive o vermelho do hover) */
+  --accent: #ef0000;
+
+  /* Links */
+  --link: #3b3f4a;
+  --link-hover: #15151e;
+}
 
 * {
-  color: rgba(255, 255, 255, 0.87);
   margin: 0;
   padding: 0;
   border: 0;
   box-sizing: border-box;
-  font-family: 'Titillium Web';
+  font-family: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--text);
 }
 
 #root {
@@ -15,47 +36,56 @@
 
 body {
   margin: 0;
-  background-color: #15151e;
+  background-color: var(--bg);
   display: flex;
   place-items: center;
 }
 
+/* Se você tiver containers/cards, isso ajuda no tema claro */
+.container, main, section {
+  background: transparent;
+}
+
+/* Links */
 a {
   text-decoration: none;
   font-size: 17px;
   font-weight: 600;
   border-bottom: 1px solid transparent;
-  color: #AAAAAA;
+  color: var(--link);
 }
 
 a:hover {
-  color: white;
-  border-bottom-color: #ef0000;
+  color: var(--link-hover);
+  border-bottom-color: var(--accent);
 }
 
+/* Título */
 h1 {
   text-transform: uppercase;
-  font-family: 'Orbitron';
+  font-family: 'Montserrat', sans-serif; /* ou deixe só Montserrat se preferir */
+  color: var(--text);
 }
 
+/* Listas */
 ul {
   display: flex;
   list-style: none;
 }
 
+/* Botões do menu */
 li button {
   padding: 8px 24px;
   white-space: nowrap;
   background: transparent;
   font-size: 17px;
   font-weight: 600;
-  color: #AAAAAA;
+  color: var(--text-muted);
   cursor: pointer;
   border-bottom: 1px solid transparent;
-
 }
 
 li button:hover {
-  color: white;
-  border-bottom-color: #ef0000;
+  color: var(--text);
+  border-bottom-color: var(--accent);
 }
