@@ -28,17 +28,16 @@ def dashboard():
         result = []
 
         for car in cars:
-            tire_query = {"carId": car["_id"]}
+            car_id_str = str(car["_id"])
+    
+            tire_query = {"carId": car_id_str} 
             if sector_filter:
                 tire_query["sector"] = sector_filter 
 
-            tires = list(collection_tire.find(
-                tire_query,
-                {"_id": 0} 
-            ))
+            tires = list(collection_tire.find(tire_query, {"_id": 0}))
 
             result.append({
-                "id": str(car["_id"]),
+                "id": car_id_str,
                 "driver": car["driver"],
                 "car_number": car["car_number"],
                 "tire_readings": tires
@@ -53,6 +52,7 @@ def dashboard():
 @app.route("/carros", methods=["GET"])
 def pilots():
     try:
+        
         cars = list(collection_cars.find({})) 
 
         for car in cars:
