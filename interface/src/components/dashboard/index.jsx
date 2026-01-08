@@ -48,9 +48,7 @@ function Dashboard() {
 
     return (
         <div className={styles.dashboard_container}>
-            <div className={styles.dashboard_title}>
-                <h1>Estado dos Pneus</h1>
-            </div>
+
 
             <div className={styles.dashboard_team}>
                 <ul style={{ width: "80%" }}>
@@ -63,7 +61,7 @@ function Dashboard() {
                             </li>
                         ))
                     ) :
-                        (
+                        (<>
                             <select onChange={(e) => setSelectTeams(e.target.value)} className={styles.dashboard_select_team}>
                                 {teams.map((team, index) => (
                                     <option key={index} value={team}>
@@ -71,6 +69,10 @@ function Dashboard() {
                                     </option>
                                 ))}
                             </select>
+                            <div className={styles.dashboard_title} >
+                                <h1>Estado dos Pneus</h1>
+                            </div>
+                        </>
                         )}
                 </ul>
             </div>
