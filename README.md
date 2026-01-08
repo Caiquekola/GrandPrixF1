@@ -45,7 +45,7 @@ SCCP (carro → ISCCP): comunicação baseada em eventos (MQTT).
 
 SACP (ISCCP → SSACP): comunicação baseada em objetos (gRPC/Protobuf).
 
-SVCP (dashboard ↔ SSVCP): comunicação baseada em recursos (REST/HTTP – FastAPI).
+SVCP (dashboard ↔ SSVCP): comunicação baseada em recursos (REST/HTTP – Flask).
 
 Banco de Dados: MongoDB replica set (3 nós) para alta disponibilidade.
 

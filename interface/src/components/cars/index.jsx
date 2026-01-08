@@ -28,15 +28,15 @@ function Cars() {
                         <thead>
                             <tr>
                                 <th style={{ ...th, width: "40%" }}>Carro</th>
-                                <th style={{ ...th, width: "20%" }}>Nacionalidade</th>
+                                {/* <th hidden style={{ ...th, width: "20%" }}>Nacionalidade</th> */}
                                 <th style={{ ...th, width: "25%" }}>Equipe</th>
                                 <th style={{ ...th, textAlign: "right", padding: "16px 4px 16px 48px" }}>N. Carro</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {cars.map((item, index) => (
-                                <tr key={index}>
+                            {Array.isArray(cars) && cars.map((item, index) => (
+                                <tr key={item._id || index}>
                                     <td style={td}>{item.driver}</td>
                                     <td style={{ ...td, textTransform: "uppercase" }}>{item.country}</td>
                                     <td style={td}>{item.team}</td>
