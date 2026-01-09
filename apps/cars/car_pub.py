@@ -1,60 +1,91 @@
-
 import json
 import os
 import random
 from datetime import datetime
 import time
+import socket
 import paho.mqtt.client as mqtt
 
-broker = "mqtt"
-port = 1883
-id = os.getenv("CAR_ID")
+broker = os.getenv("MQTT_BROKER", "mqtt")
+port = int(os.getenv("MQTT_PORT", "1883"))
+car_id = (os.getenv("CAR_ID") or "00").zfill(2)
+
+print(f"[CAR {car_id}] broker={broker} port={port}", flush=True)
+
+connected = False
+
+def on_connect(client, userdata, flags, rc):
+    global connected
+    print(f"[CAR {car_id}] MQTT connected rc={rc}", flush=True)
+    connected = (rc == 0)
+
+def on_disconnect(client, userdata, rc):
+    print(f"[CAR {car_id}] MQTT disconnected rc={rc}", flush=True)
 
 client = mqtt.Client()
+client.on_connect = on_connect
+client.on_disconnect = on_disconnect
+
+print(f"[CAR {car_id}] resolvendo DNS do broker...", flush=True)
+try:
+    print(f"[CAR {car_id}] {broker} -> {socket.gethostbyname(broker)}", flush=True)
+except Exception as e:
+    print(f"[CAR {car_id}] ERRO DNS broker={broker}: {e}", flush=True)
+
+print(f"[CAR {car_id}] conectando...", flush=True)
 client.connect(broker, port, 60)
 client.loop_start()
+
+t0 = time.time()
+while not connected:
+    if time.time() - t0 > 20:
+        raise SystemExit(f"[CAR {car_id}] NÃO conectou em 20s (broker={broker}:{port})")
+    time.sleep(0.1)
 
 def gen_tire_data():
     return {
         "temperature": round(random.uniform(95, 105), 1),
         "pressure": round(random.uniform(18.5, 19.8), 1),
-        "compound": random.choice["Macio", "Médio ", "Duro ", "Intermediário", "Puro"],
-        "wear": random.randint(30, 70)
+        "compound": random.choice(["Macio", "Médio", "Duro", "Intermediário", "Chuva"]),
+        "wear": random.randint(30, 70),
     }
 
-def gen_car(id_pilot, lap):
-    tire_data = {
-        "frontLeft": gen_tire_data(),
-        "frontRight": gen_tire_data(),
-        "rearLeft": gen_tire_data(),
-        "rearRight": gen_tire_data(),
-    }
-
+def gen_car(lap):
     return {
-        "carId": id_pilot,
+        "carId": car_id,
         "lapNumber": lap,
         "timestamp": datetime.utcnow().isoformat() + "Z",
         "speed": round(random.uniform(200, 230), 1),
-        "tireData": tire_data
+        "tireData": {
+            "Esquerda-Frontal": gen_tire_data(),
+            "Direita-Frontal": gen_tire_data(),
+            "Esquerda-Traseira": gen_tire_data(),
+            "Direita-Traseira": gen_tire_data(),
+        }
     }
 
-def send_to_isccp(lap):
-    isccp_list = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15"]
+def send_to_isccp(lap, isccp_id):
+    data = gen_car(lap)
+    data["sector"] = isccp_id
 
-    for isccp in isccp_list:
-        car_data = gen_car(id, lap) 
-        car_data["sector"] = isccp 
-        client.publish(f"/isccp-{isccp}/tires", json.dumps(car_data))
+    topic = f"/isccp-{isccp_id}/tires"
+    info = client.publish(topic, json.dumps(data), qos=0)
+    info.wait_for_publish()
 
-def main(): 
+    print(f"[CAR {car_id}] publish topic={topic} rc={info.rc} lap={lap}", flush=True)
+
+def main():
+    print(f"[CAR {car_id}] iniciando corrida", flush=True)
+
+    isccp_list = [str(i).zfill(2) for i in range(1, 16)]
+
     for lap in range(1, 72):
-        send_to_isccp(lap)
+        for isccp in isccp_list:
+            send_to_isccp(lap, isccp)
+            time.sleep(random.uniform(0.2, 0.6))
 
-        time.sleep(5)
-
-    print(f"\nCarro {id} finalizou as voltas")
+    print(f"[CAR {car_id}] finalizou a corrida!", flush=True)
     client.disconnect()
 
 if __name__ == "__main__":
     main()
-  

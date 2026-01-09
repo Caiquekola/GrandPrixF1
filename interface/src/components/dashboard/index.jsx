@@ -110,16 +110,25 @@ function Dashboard() {
                                 </thead>
 
                                 <tbody>
-                                    {car.tire_readings.map((reading, readIndex) =>
-                                        Object.entries(reading.tireData).map(([tireName, tireInfo]) => (
-                                            <tr key={`${carIndex}-${readIndex}-${tireName}`}>
-                                                <td >{tireName}</td>
-                                                <td style={{ textTransform: "uppercase" }}>{tireInfo.compound}</td>
-                                                <td >{tireInfo.pressure}</td>
-                                                <td >{tireInfo.temperature}</td>
-                                                <td style={{ textAlign: "right", padding: "16px 4px 16px 48px" }}>{tireInfo.wear}%</td>
-                                            </tr>
-                                        ))
+                                    {/* No lugar de car.tire_readings.map, use isto: */}
+                                    {car.tire_readings.length > 0 ? (
+                                        car.tire_readings.map((reading, readIndex) =>
+                                            Object.entries(reading.tireData).map(([tireName, tireInfo]) => (
+                                                <tr key={`${carIndex}-${readIndex}-${tireName}`}>
+                                                    <td>{tireName}</td>
+                                                    <td style={{ textTransform: "uppercase" }}>{tireInfo.compound}</td>
+                                                    <td>{tireInfo.pressure} psi</td>
+                                                    <td>{tireInfo.temperature} °C</td>
+                                                    <td style={{ textAlign: "right", padding: "16px 4px 16px 48px" }}>{tireInfo.wear}%</td>
+                                                </tr>
+                                            ))
+                                        )
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="5" style={{ textAlign: "center", padding: "2rem", color: "#666" }}>
+                                                Aguardando telemetria do Setor {selectIsccp}...
+                                            </td>
+                                        </tr>
                                     )}
                                 </tbody>
                             </table>

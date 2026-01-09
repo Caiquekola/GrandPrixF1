@@ -11,13 +11,13 @@ services:
       - ./interface:/app
       - /app/node_modules
 
-  mqttgp:
+  mqtt:
     image: toke/mosquitto
-    container_name: mqttgp
+    container_name: mqtt
     expose:
-      - 1884
+      - 1883
     ports:
-      - 1884:1884
+      - 1883:1883
     restart: unless-stopped
 
   ssvcp:
@@ -36,7 +36,8 @@ services:
     ports:
       - "18861:18861"
     depends_on:
-      - mongo
+      mongo_rs_init:
+        condition: service_completed_successfully
 
   ssacp_02:
     build: ./apps/SACP
@@ -44,7 +45,8 @@ services:
     ports:
       - "18862:18861"
     depends_on:
-      - mongo
+      mongo_rs_init:
+        condition: service_completed_successfully
 
   ssacp_03:
     build: ./apps/SACP
@@ -52,7 +54,8 @@ services:
     ports:
       - "18863:18861"
     depends_on:
-      - mongo
+      mongo_rs_init:
+        condition: service_completed_successfully
 
   mongo_db1:
     image: mongo:6
@@ -68,6 +71,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    depends_on:
+      - mongo
 
   mongo_db2:
     image: mongo:6
@@ -83,6 +88,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    depends_on:
+      - mongo
 
   mongo_db3:
     image: mongo:6
@@ -98,6 +105,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    depends_on:
+      - mongo
 
   mongo_rs_init:
     image: mongo:6

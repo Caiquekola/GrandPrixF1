@@ -1,9 +1,6 @@
 FROM python:3.11-slim
-
 WORKDIR /app
-
 COPY car_pub.py .
-
 RUN pip install --no-cache-dir paho-mqtt
-
-CMD ["python", "car_pub.py"]
+ENV PYTHONUNBUFFERED=1
+CMD ["python", "-u", "car_pub.py"]

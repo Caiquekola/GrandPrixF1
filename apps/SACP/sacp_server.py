@@ -15,9 +15,10 @@ class SSACPServer(rpyc.Service):
         
         operations = []
         for data in car_data:
+        # O filtro garante que atualizamos o dado do carro NAQUELE setor
             filter = {
-                "carId": data["carId"],
-                "sector": data["sector"]
+                "carId": str(data["carId"]), 
+                "sector": str(data["sector"])
             }
 
             update_tire = {
@@ -25,10 +26,9 @@ class SSACPServer(rpyc.Service):
                     "timestamp": data["timestamp"],
                     "lapNumber": data["lapNumber"],
                     "speed": data["speed"],
-                    "tireData": data["tireData"],
+                    "tireData": data["tireData"] 
                 }
             }
-
             operations.append(UpdateOne(filter, update_tire, upsert=True))
 
         if operations:

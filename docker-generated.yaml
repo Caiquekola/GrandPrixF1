@@ -4,7 +4,6 @@ services:
     container_name: car_01
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=01
     - MQTT_BROKER=mqtt
@@ -13,7 +12,6 @@ services:
     container_name: car_02
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=02
     - MQTT_BROKER=mqtt
@@ -22,7 +20,6 @@ services:
     container_name: car_03
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=03
     - MQTT_BROKER=mqtt
@@ -31,7 +28,6 @@ services:
     container_name: car_04
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=04
     - MQTT_BROKER=mqtt
@@ -40,7 +36,6 @@ services:
     container_name: car_05
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=05
     - MQTT_BROKER=mqtt
@@ -49,7 +44,6 @@ services:
     container_name: car_06
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=06
     - MQTT_BROKER=mqtt
@@ -58,7 +52,6 @@ services:
     container_name: car_07
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=07
     - MQTT_BROKER=mqtt
@@ -67,7 +60,6 @@ services:
     container_name: car_08
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=08
     - MQTT_BROKER=mqtt
@@ -76,7 +68,6 @@ services:
     container_name: car_09
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=09
     - MQTT_BROKER=mqtt
@@ -85,7 +76,6 @@ services:
     container_name: car_10
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=10
     - MQTT_BROKER=mqtt
@@ -94,7 +84,6 @@ services:
     container_name: car_11
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=11
     - MQTT_BROKER=mqtt
@@ -103,7 +92,6 @@ services:
     container_name: car_12
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=12
     - MQTT_BROKER=mqtt
@@ -112,7 +100,6 @@ services:
     container_name: car_13
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=13
     - MQTT_BROKER=mqtt
@@ -121,7 +108,6 @@ services:
     container_name: car_14
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=14
     - MQTT_BROKER=mqtt
@@ -130,7 +116,6 @@ services:
     container_name: car_15
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=15
     - MQTT_BROKER=mqtt
@@ -139,7 +124,6 @@ services:
     container_name: car_16
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=16
     - MQTT_BROKER=mqtt
@@ -148,7 +132,6 @@ services:
     container_name: car_17
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=17
     - MQTT_BROKER=mqtt
@@ -157,7 +140,6 @@ services:
     container_name: car_18
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=18
     - MQTT_BROKER=mqtt
@@ -166,7 +148,6 @@ services:
     container_name: car_19
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=19
     - MQTT_BROKER=mqtt
@@ -175,7 +156,6 @@ services:
     container_name: car_20
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=20
     - MQTT_BROKER=mqtt
@@ -184,7 +164,6 @@ services:
     container_name: car_21
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=21
     - MQTT_BROKER=mqtt
@@ -193,7 +172,6 @@ services:
     container_name: car_22
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=22
     - MQTT_BROKER=mqtt
@@ -202,7 +180,6 @@ services:
     container_name: car_23
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=23
     - MQTT_BROKER=mqtt
@@ -211,7 +188,6 @@ services:
     container_name: car_24
     depends_on:
     - mqtt
-    - ssvcp
     environment:
     - CAR_ID=24
     - MQTT_BROKER=mqtt
@@ -223,7 +199,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=01
     - BROKER=mqtt
@@ -235,7 +210,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=02
     - BROKER=mqtt
@@ -247,7 +221,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=03
     - BROKER=mqtt
@@ -259,7 +232,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=04
     - BROKER=mqtt
@@ -271,7 +243,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=05
     - BROKER=mqtt
@@ -283,7 +254,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=06
     - BROKER=mqtt
@@ -295,7 +265,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=07
     - BROKER=mqtt
@@ -307,7 +276,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=08
     - BROKER=mqtt
@@ -319,7 +287,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=09
     - BROKER=mqtt
@@ -331,7 +298,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=10
     - BROKER=mqtt
@@ -343,7 +309,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=11
     - BROKER=mqtt
@@ -355,7 +320,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=12
     - BROKER=mqtt
@@ -367,7 +331,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=13
     - BROKER=mqtt
@@ -379,7 +342,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=14
     - BROKER=mqtt
@@ -391,7 +353,6 @@ services:
     - ssacp_01
     - ssacp_02
     - ssacp_03
-    - mongo
     environment:
     - ISCCP_ID=15
     - BROKER=mqtt
