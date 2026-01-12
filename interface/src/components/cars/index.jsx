@@ -38,7 +38,8 @@ function Cars() {
             }
 
             // Ordena pela posição (1º, 2º, 3º...) vinda do Backend
-            const sortedCars = leaderboard.sort((a, b) => a.position - b.position);
+            const sortedCars = [...leaderboard].sort((a, b) => a.position - b.position);
+
 
             setRace(raceData);
             setCars(sortedCars);
@@ -75,10 +76,12 @@ function Cars() {
                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
                         <thead>
                             <tr>
-                                <th style={{ ...th, width: "10%" }}>Pos</th>
-                                <th style={{ ...th, width: "40%" }}>Piloto</th>
-                                <th style={{ ...th, width: "30%" }}>Equipe</th>
-                                <th style={{ ...th, textAlign: "right", width: "20%" }}>Nº Carro</th>
+                                <th style={{ ...th, width: "5%" }}>Pos</th>
+                                <th style={{ ...th, width: "30%" }}>Piloto</th>
+                                <th style={{ ...th, width: "20%" }}>Equipe</th>
+                                <th style={{ ...th, width: "15%" }}>Melhor Volta</th>
+                                <th style={{ ...th, width: "15%" }}>Tempo Total</th>
+                                <th style={{ ...th, textAlign: "right", width: "15%" }}>N. Carro</th>
                             </tr>
                         </thead>
 
@@ -90,6 +93,8 @@ function Cars() {
                                     </td>
                                     <td style={td}>{item.driver}</td>
                                     <td style={td}>{item.team}</td>
+                                    <td style={td}>{item.best_lap}</td>
+                                    <td style={td}>{item.total_time}</td>
                                     <td style={{ ...td, textAlign: "right" }}>
                                         <span style={badge}>{item.car_number}</span>
                                     </td>

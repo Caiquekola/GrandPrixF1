@@ -42,25 +42,30 @@ while not connected:
         raise SystemExit(f"[CAR {car_id}] NÃO conectou em 20s (broker={broker}:{port})")
     time.sleep(0.1)
 
-def gen_tire_data():
+def gen_tire_data(value):
     return {
         "temperature": round(random.uniform(95, 105), 1),
         "pressure": round(random.uniform(18.5, 19.8), 1),
-        "compound": random.choice(["Macio", "Médio", "Duro", "Intermediário", "Chuva"]),
+        "compound":gen_tire_compound(value),
         "wear": random.randint(30, 70),
     }
+def gen_tire_compound(value):
+    compounds = ["Macio", "Médio", "Duro", "Intermediário", "Chuva"]
+    return compounds[value] 
 
 def gen_car(lap):
+    value = random.randint(0,4)
+    tire_data = gen_tire_data(value)
     return {
         "carId": car_id,
         "lapNumber": lap,
         "timestamp": datetime.utcnow().isoformat() + "Z",
         "speed": round(random.uniform(200, 230), 1),
         "tireData": {
-            "Esquerda-Frontal": gen_tire_data(),
-            "Direita-Frontal": gen_tire_data(),
-            "Esquerda-Traseira": gen_tire_data(),
-            "Direita-Traseira": gen_tire_data(),
+            "Esquerda-Frontal": tire_data,
+            "Direita-Frontal": tire_data,
+            "Esquerda-Traseira": tire_data,
+            "Direita-Traseira": tire_data,
         }
     }
 
@@ -82,7 +87,7 @@ def main():
     for lap in range(1, 72):
         for isccp in isccp_list:
             send_to_isccp(lap, isccp)
-            time.sleep(random.uniform(0.2, 0.6))
+            time.sleep(random.uniform(1, 1.2))
 
     print(f"[CAR {car_id}] finalizou a corrida!", flush=True)
     client.disconnect()

@@ -13,6 +13,7 @@ db = client["base_gp"]
 # print(db.list_collection_names())
 collection_cars = db["cars"]
 collection_tire = db["tire_states"]
+collection_race = db["race_state"]
 
 # Use o Replica Set em todos os arquivos (SSVCP e SSACP)
 client = MongoClient("mongodb://mongo_db1:27017,mongo_db2:27017,mongo_db3:27017/?replicaSet=rs0")
@@ -29,23 +30,22 @@ def dashboard():
     result = []
 
     for car in cars:
-        # No MongoDB o _id é "05". O carId na telemetria também deve ser "05"
-        car_id_str = str(car["_id"]) 
+        car_id_str = str(car["_id"])
 
-        tire_query = {
-            "carId": car_id_str, 
-            "sector": sector_filter
-        }
-
-        # Buscamos o documento mais recente (sort por timestamp)
-        tires = list(collection_tire.find(tire_query, {"_id": 0}).sort("timestamp", -1).limit(1))
+        # pega SEMPRE o status mais recente do carro (independente do setor escolhido)
+        tires = list(
+            collection_tire
+                .find({"carId": car_id_str}, {"_id": 0})
+                .sort([("lapNumber", -1), ("sector", -1), ("timestamp", -1)])
+                .limit(1)
+        )
 
         result.append({
             "id": car_id_str,
             "driver": car["driver"],
             "car_number": car["car_number"],
             "team": car["team"],
-            "tire_readings": tires # Nome usado pelo seu Frontend
+            "tire_readings": tires
         })
     return jsonify(result), 200
 
@@ -69,87 +69,67 @@ def format_hms(seconds: int) -> str:
 @app.route("/carros", methods=["GET"])
 def get_leaderboard():
     try:
-        # ---- 1) Estado da corrida (tempo simulado e volta atual global) ----
-        race_state = list(collection_tire.aggregate([
-            {
-                "$group": {
-                    "_id": None,
-                    "min_ts": {"$min": "$timestamp"},
-                    "max_ts": {"$max": "$timestamp"},
-                    "max_lap": {"$max": "$lapNumber"},
-                }
-            }
-        ]))
+        race_doc = collection_race.find_one({"_id": "race"})
+        # Se a corrida ainda não começou, retorna valores padrão
+        if not race_doc:
+            return jsonify({"race": {"current_lap": 0, "total_laps": 71, "sim_time_hms": "00:00:00"}, "leaderboard": []}), 200
 
-        min_ts = race_state[0]["min_ts"] if race_state else None
-        max_ts = race_state[0]["max_ts"] if race_state else None
-        current_lap = int(race_state[0]["max_lap"]) if race_state and race_state[0].get("max_lap") is not None else 0
+        dt_start = parse_iso_z(race_doc.get("start_ts"))
+        dt_last_global = parse_iso_z(race_doc.get("last_ts"))
+        sim_seconds = int((dt_last_global - dt_start).total_seconds()) if dt_start and dt_last_global else 0
 
-        dt_min = parse_iso_z(min_ts) if min_ts else None
-        dt_max = parse_iso_z(max_ts) if max_ts else None
-        sim_seconds = int((dt_max - dt_min).total_seconds()) if (dt_min and dt_max) else 0
-
-        race = {
-            "current_lap": current_lap,
-            "total_laps": TOTAL_LAPS,
-            "sim_time_seconds": sim_seconds,
-            "sim_time_hms": format_hms(sim_seconds),
+        race_stats = {
+            "current_lap": int(race_doc.get("max_lap", 0)),
+            "total_laps": 71,
+            "sim_time_hms": format_hms(sim_seconds)
         }
 
-        # ---- 2) Leaderboard dinâmico (join correto + ranking) ----
         pipeline = [
-            # carIdStr = cars.carId (se existir) senão string do _id
-            {
-                "$addFields": {
-                    "carIdStr": {
-                        "$ifNull": ["$carId", {"$toString": "$_id"}]
-                    }
-                }
-            },
             {
                 "$lookup": {
                     "from": "tire_states",
-                    "let": {"cid": "$carIdStr"},
+                    "let": {"cid": {"$toString": "$_id"}},
                     "pipeline": [
                         {"$match": {"$expr": {"$eq": ["$carId", "$$cid"]}}},
-                        # setor como int para ordenar corretamente (01..15)
-                        {"$addFields": {"sectorInt": {"$toInt": "$sector"}}},
-                        {"$sort": {"lapNumber": -1, "sectorInt": -1, "timestamp": 1}},
-                        {"$limit": 1},
+                        # Agora lapNumber é INT, ordenação funciona 1, 2, 3... 71
+                        {"$sort": {"lapNumber": -1, "sector": -1}},
+                        {"$limit": 1}
                     ],
-                    "as": "latest_status"
+                    "as": "status"
                 }
             },
             {
                 "$addFields": {
-                    "last_lap": {"$ifNull": [{"$arrayElemAt": ["$latest_status.lapNumber", 0]}, 0]},
-                    "last_sector": {"$ifNull": [{"$arrayElemAt": ["$latest_status.sector", 0]}, "00"]},
-                    # se não tem telemetria, joga pro fim (timestamp muito "alto")
-                    "last_time": {"$ifNull": [{"$arrayElemAt": ["$latest_status.timestamp", 0]}, "9999-12-31T23:59:59Z"]},
+                    "last_status": {"$arrayElemAt": ["$status", 0]},
+                    "best_lap_val": {"$ifNull": ["$best_lap", 0]}
                 }
             },
-            {"$addFields": {"last_sector_int": {"$toInt": "$last_sector"}}},
-            {"$sort": {"last_lap": -1, "last_sector_int": -1, "last_time": 1, "car_number": 1}},
+            # Critério F1: Maior Volta > Maior Setor > Menor Tempo (quem chegou primeiro)
+            {"$sort": {"last_status.lapNumber": -1, "last_status.sector": -1, "last_status.timestamp": 1}}
         ]
 
         ordered_cars = list(collection_cars.aggregate(pipeline))
-
         leaderboard = []
+
         for index, car in enumerate(ordered_cars):
+            last = car.get("last_status") or {}
+            dt_car_last = parse_iso_z(last.get("timestamp"))
+            car_total_seconds = (dt_car_last - dt_start).total_seconds() if dt_start and dt_car_last else 0
+
             leaderboard.append({
                 "position": index + 1,
                 "driver": car["driver"],
                 "team": car["team"],
                 "car_number": car["car_number"],
-                "current_lap": int(car.get("last_lap", 0)),
-                "sector": car.get("last_sector", "00"),
+                "current_lap": int(last.get("lapNumber", 0)),
+                "best_lap": f"{car['best_lap_val']:.2f}s" if car['best_lap_val'] > 0 else "--",
+                "total_time": format_hms(car_total_seconds)
             })
 
-        # Retorna objeto com meta + lista (mais fácil pro front mostrar tempo/voltas)
-        return jsonify({"race": race, "leaderboard": leaderboard}), 200
-
+        return jsonify({"race": race_stats, "leaderboard": leaderboard}), 200
     except Exception as e:
-        print(f"ERRO /carros: {e}")
+        print(f"ERRO: {e}")
         return jsonify({"error": str(e)}), 500
+    
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

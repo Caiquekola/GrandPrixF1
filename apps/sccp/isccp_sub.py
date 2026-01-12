@@ -26,7 +26,6 @@ def on_message(client, userdata, msg):
     try:
         data = json.loads(msg.payload.decode())
         received_data.append(data)
-        # log leve (não spam)
         print(f"[ISCCP-{ISCCP_ID}] recv carId={data.get('carId')} lap={data.get('lapNumber')} sector={data.get('sector')}", flush=True)
     except Exception as e:
         print(f"[ISCCP-{ISCCP_ID}] ERRO parse msg: {e}", flush=True)
@@ -50,7 +49,6 @@ def send_to_ssacp():
         print(f"[ISCCP-{ISCCP_ID}] sent batch={len(batch)} resp={resp}", flush=True)
     except Exception as e:
         print(f"[ISCCP-{ISCCP_ID}] ERRO RPyC: {e}", flush=True)
-        # se der erro, devolve o batch pra não perder
         received_data = batch + received_data
 
 if __name__ == "__main__":
