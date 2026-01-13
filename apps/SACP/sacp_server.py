@@ -79,5 +79,6 @@ class SSACPServer(rpyc.Service):
 
 if __name__ == "__main__":
     from rpyc.utils.server import ThreadedServer
-    server = ThreadedServer(SSACPServer, port=18861, protocol_config={"allow_public_attrs": True})
+    server = ThreadedServer(SSACPServer, port=18861, protocol_config={"allow_public_attrs": True,
+    'allow_pickle': True})
     server.start()
