@@ -17,58 +17,51 @@ class SSACPServer(rpyc.Service):
     def exposed_submit_tire_data(self, isccp_id, car_data):
         car_data = rpyc.classic.obtain(car_data)
         
-        print(f"Recebendo lote de dados do ISCCP {isccp_id}")
-        
         operations = []
         for data in car_data:
             car_id = str(data["carId"])
-            sector = str(data["sector"])
-            lap_num = int(data["lapNumber"]) 
+            sector_str = str(data["sector"])
+            lap_num = int(data["lapNumber"])
+            sector_num = int(sector_str)
 
-            filter_spec = {"carId": car_id, "sector": sector}
+            filter_spec = {"carId": car_id, "sector": sector_str}
             update_doc = {
                 "$set": {
                     "timestamp": data["timestamp"],
-                    "lapNumber": lap_num,
+                    "lapNumber": lap_num,    # Inteiro
+                    "sectorInt": sector_num, # Inteiro para facilitar a busca
                     "speed": data["speed"],
                     "tireData": data["tireData"] 
                 }
             }
             operations.append(UpdateOne(filter_spec, update_doc, upsert=True))
 
-            if sector == "01":
+            # Melhor Volta (Setor 01)
+            if sector_str == "01":
                 try:
                     curr_ts = parse_iso_z(data["timestamp"])
-                    prev_lap = collection_laps.find_one({"carId": car_id, "lapNumber": lap_num - 1})
-                    if prev_lap:
-                        prev_ts = parse_iso_z(prev_lap["timestamp"])
-                        duration = (curr_ts - prev_ts).total_seconds()
-                        db.cars.update_one({"_id": car_id}, {"$min": {"best_lap": duration}})
-                    
-                    collection_laps.update_one(
-                        {"carId": car_id, "lapNumber": lap_num},
-                        {"$set": {"timestamp": data["timestamp"]}},
-                        upsert=True
-                    )
-                except Exception as e:
-                    print(f"Erro cronometragem: {e}")
+                    prev = collection_laps.find_one({"carId": car_id, "lapNumber": lap_num - 1})
+                    if prev:
+                        diff = (curr_ts - parse_iso_z(prev["timestamp"])).total_seconds()
+                        db.cars.update_one({"_id": car_id}, {"$min": {"best_lap": diff}})
+                    collection_laps.update_one({"carId": car_id, "lapNumber": lap_num}, {"$set": {"timestamp": data["timestamp"]}}, upsert=True)
+                except: pass
 
         if operations:
             collection.bulk_write(operations)
 
+        # Atualiza Estado da Corrida (Global)
         try:
-            valid = [d for d in car_data if "timestamp" in d]
-            if valid:
-                batch_max_ts = max(d["timestamp"] for d in valid)
-                batch_min_ts = min(d["timestamp"] for d in valid)
-                batch_max_lap = max(int(d["lapNumber"]) for d in valid)
-
+            valid_ts = [d["timestamp"] for d in car_data if "timestamp" in d]
+            if valid_ts:
                 race_state.update_one(
                     {"_id": "race"},
                     {
-                        "$min": {"start_ts": batch_min_ts},
-                        "$max": {"last_ts": batch_max_ts, "max_lap": batch_max_lap},
-                        "$set": {"updated_at": datetime.utcnow().isoformat() + "Z"}
+                        "$min": {"start_ts": min(valid_ts)},
+                        "$max": {
+                            "last_ts": max(valid_ts), 
+                            "max_lap": max(int(d["lapNumber"]) for d in car_data)
+                        }
                     },
                     upsert=True
                 )

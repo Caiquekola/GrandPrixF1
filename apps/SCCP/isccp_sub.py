@@ -11,7 +11,8 @@ ISCCP_ID = (os.getenv("ISCCP_ID") or "01").zfill(2)
 SSACP_LIST = ["ssacp_01", "ssacp_02", "ssacp_03"]
 
 assigned_ssacp = SSACP_LIST[(int(ISCCP_ID) - 1) % 3]
-proxy = rpyc.connect(assigned_ssacp, 18861,config="'allow_pickle': True")
+proxy = rpyc.connect(assigned_ssacp, 18861,
+                     config={'allow_pickle': True} )
 print(f"[ISCCP-{ISCCP_ID}] conectado ao {assigned_ssacp}", flush=True)
 
 received_data = []

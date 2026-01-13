@@ -1,4 +1,4 @@
-version: "3"
+
 services:
   interface:
     build: ./interface
@@ -57,59 +57,7 @@ services:
       mongo_rs_init:
         condition: service_completed_successfully
 
-  mongo_db1:
-    image: mongo:6
-    container_name: mongo_db1
-    restart: always
-    ports:
-      - "27018:27017"
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
-    volumes:
-      - ./apps/mongo-config/data1:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 })"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
-    depends_on:
-      - mongo
-
-  mongo_db2:
-    image: mongo:6
-    container_name: mongo_db2
-    restart: always
-    ports:
-      - "27019:27017"
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
-    volumes:
-      - ./apps/mongo-config/data2:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 })"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
-    depends_on:
-      - mongo
-
-  mongo_db3:
-    image: mongo:6
-    container_name: mongo_db3
-    restart: always
-    ports:
-      - "27020:27017"
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
-    volumes:
-      - ./apps/mongo-config/data3:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 })"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
-    depends_on:
-      - mongo
+  
 
   mongo_rs_init:
     image: mongo:6
@@ -175,3 +123,54 @@ services:
       timeout: 10s
       retries: 5
       start_period: 20s
+
+  mongo_db1:
+    image: mongo:6
+    container_name: mongo_db1
+    restart: always
+    ports:
+      - "27018:27017"
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - ./apps/mongo-config/data1:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    
+
+  mongo_db2:
+    image: mongo:6
+    container_name: mongo_db2
+    restart: always
+    ports:
+      - "27019:27017"
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - ./apps/mongo-config/data2:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    
+
+  mongo_db3:
+    image: mongo:6
+    container_name: mongo_db3
+    restart: always
+    ports:
+      - "27020:27017"
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - ./apps/mongo-config/data3:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    

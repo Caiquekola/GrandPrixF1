@@ -70,42 +70,35 @@ def format_hms(seconds: int) -> str:
 def get_leaderboard():
     try:
         race_doc = collection_race.find_one({"_id": "race"})
-        # Se a corrida ainda não começou, retorna valores padrão
-        if not race_doc:
-            return jsonify({"race": {"current_lap": 0, "total_laps": 71, "sim_time_hms": "00:00:00"}, "leaderboard": []}), 200
+        
+        # Tenta pegar o início pelo race_doc, senão pega a primeira mensagem do banco
+        if race_doc and "start_ts" in race_doc:
+            dt_start = parse_iso_z(race_doc["start_ts"])
+        else:
+            first_msg = collection_tire.find_one({}, sort=[("timestamp", 1)])
+            dt_start = parse_iso_z(first_msg["timestamp"]) if first_msg else None
 
-        dt_start = parse_iso_z(race_doc.get("start_ts"))
-        dt_last_global = parse_iso_z(race_doc.get("last_ts"))
-        sim_seconds = int((dt_last_global - dt_start).total_seconds()) if dt_start and dt_last_global else 0
-
-        race_stats = {
-            "current_lap": int(race_doc.get("max_lap", 0)),
-            "total_laps": 71,
-            "sim_time_hms": format_hms(sim_seconds)
-        }
+        # Tempo da última atualização global
+        dt_last_global = parse_iso_z(race_doc.get("last_ts")) if race_doc else dt_start
+        sim_seconds_global = int((dt_last_global - dt_start).total_seconds()) if dt_start and dt_last_global else 0
 
         pipeline = [
-            {
-                "$lookup": {
-                    "from": "tire_states",
-                    "let": {"cid": {"$toString": "$_id"}},
-                    "pipeline": [
-                        {"$match": {"$expr": {"$eq": ["$carId", "$$cid"]}}},
-                        # Agora lapNumber é INT, ordenação funciona 1, 2, 3... 71
-                        {"$sort": {"lapNumber": -1, "sector": -1}},
-                        {"$limit": 1}
-                    ],
-                    "as": "status"
-                }
-            },
-            {
-                "$addFields": {
-                    "last_status": {"$arrayElemAt": ["$status", 0]},
-                    "best_lap_val": {"$ifNull": ["$best_lap", 0]}
-                }
-            },
-            # Critério F1: Maior Volta > Maior Setor > Menor Tempo (quem chegou primeiro)
-            {"$sort": {"last_status.lapNumber": -1, "last_status.sector": -1, "last_status.timestamp": 1}}
+            { "$lookup": {
+                "from": "tire_states",
+                "let": {"cid": {"$toString": "$_id"}},
+                "pipeline": [
+                    {"$match": {"$expr": {"$eq": ["$carId", "$$cid"]}}},
+                    {"$sort": {"lapNumber": -1, "sectorInt": -1}},
+                    {"$limit": 1}
+                ],
+                "as": "status"
+            }},
+            { "$addFields": {
+                "last_status": {"$arrayElemAt": ["$status", 0]},
+                "best_lap_val": {"$ifNull": ["$best_lap", 0]}
+            }},
+            # Ordenação Real F1: Volta desc > Setor desc > Tempo asc (chegou primeiro)
+            {"$sort": {"last_status.lapNumber": -1, "last_status.sectorInt": -1, "last_status.timestamp": 1}}
         ]
 
         ordered_cars = list(collection_cars.aggregate(pipeline))
@@ -113,8 +106,13 @@ def get_leaderboard():
 
         for index, car in enumerate(ordered_cars):
             last = car.get("last_status") or {}
-            dt_car_last = parse_iso_z(last.get("timestamp"))
-            car_total_seconds = (dt_car_last - dt_start).total_seconds() if dt_start and dt_car_last else 0
+            ts_str = last.get("timestamp")
+            
+            if ts_str and dt_start:
+                dt_car_last = parse_iso_z(ts_str)
+                car_total_seconds = int((dt_car_last - dt_start).total_seconds())
+            else:
+                car_total_seconds = 0
 
             leaderboard.append({
                 "position": index + 1,
@@ -126,9 +124,14 @@ def get_leaderboard():
                 "total_time": format_hms(car_total_seconds)
             })
 
+        race_stats = {
+            "current_lap": int(race_doc.get("max_lap", 0)) if race_doc else 0,
+            "total_laps": 71,
+            "sim_time_hms": format_hms(sim_seconds_global)
+        }
+
         return jsonify({"race": race_stats, "leaderboard": leaderboard}), 200
     except Exception as e:
-        print(f"ERRO: {e}")
         return jsonify({"error": str(e)}), 500
     
 if __name__ == "__main__":
