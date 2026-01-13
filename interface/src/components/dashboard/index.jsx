@@ -3,7 +3,7 @@ import styles from "./dashboard.module.css"
 
 function Dashboard() {
     const [cars, setCars] = useState([]);
-    const [selectTeams, setSelectTeams] = useState("Red Bull");
+    const [selectTeams, setSelectTeams] = useState("Flamengo");
     const [selectIsccp, setSelectIsccps] = useState("01");
     const teams = [
         "Flamengo",
